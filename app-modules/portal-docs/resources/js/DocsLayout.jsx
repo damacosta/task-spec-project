@@ -1,5 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { MDXProvider } from '@mdx-js/react';
+import { useEffect } from 'react';
+import MobileNav from './components/MobileNav';
 import Sidebar from './components/Sidebar';
 import ThemeToggle from './components/ThemeToggle';
 import { mdxComponents } from './mdx-components';
@@ -13,20 +15,31 @@ export default function DocsLayout({ children }) {
     const tabs = navigation ?? [];
     const activeTab = tabs.find((tab) => tab.tab === page.tab) ?? tabs[0];
 
+    /*
+     * docs.json colors reach Tailwind through these vars, so bg-primary/10 and
+     * text-primary follow the config without a rebuild. They go on the root element and
+     * not on a wrapper because the mobile menu renders into the body through a portal,
+     * outside any wrapper this component could set them on.
+     */
+    useEffect(() => {
+        const root = document.documentElement;
+
+        root.style.setProperty('--color-primary', config.colors.primary);
+        root.style.setProperty('--color-primary-light', config.colors.light);
+        root.style.setProperty('--color-primary-dark', config.colors.dark);
+    }, [config.colors]);
+
     return (
         <MDXProvider components={mdxComponents}>
-            <div
-                className="min-h-screen"
-                /* docs.json colors reach Tailwind through these vars, so bg-primary/10 and
-                   text-primary follow the config without a rebuild. */
-                style={{
-                    '--color-primary': config.colors.primary,
-                    '--color-primary-light': config.colors.light,
-                    '--color-primary-dark': config.colors.dark,
-                }}
-            >
+            <div className="min-h-screen">
                 <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/90 backdrop-blur dark:border-stone-800 dark:bg-background-dark/90">
-                    <div className="mx-auto flex h-16 max-w-[100rem] items-center gap-4 px-4">
+                    <div className="mx-auto flex h-16 max-w-[100rem] items-center gap-2 px-4">
+                        <MobileNav
+                            groups={activeTab?.groups ?? []}
+                            anchors={config.anchors ?? []}
+                            currentSlug={page.slug}
+                        />
+
                         <Link href={`/${config.prefix ?? 'docs'}`} className="font-semibold">
                             {config.name}
                         </Link>
