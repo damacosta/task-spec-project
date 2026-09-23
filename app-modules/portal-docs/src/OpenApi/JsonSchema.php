@@ -16,6 +16,8 @@ final readonly class JsonSchema
 {
     private const int MAX_DEPTH = 6;
 
+    private const array COUNTING_CONSTRAINTS = ['minLength', 'maxLength', 'minItems', 'maxItems'];
+
     /**
      * @param  array<string, mixed>  $document  the whole spec, needed to follow $ref
      */
@@ -214,11 +216,22 @@ final readonly class JsonSchema
 
         foreach (['minimum', 'maximum', 'minLength', 'maxLength', 'minItems', 'maxItems', 'pattern', 'format'] as $key) {
             if (array_key_exists($key, $schema) && $schema[$key] !== null) {
-                $constraints[$key] = $schema[$key];
+                $constraints[$key] = in_array($key, self::COUNTING_CONSTRAINTS, strict: true)
+                    ? $this->asCount($schema[$key])
+                    : $schema[$key];
             }
         }
 
         return $constraints;
+    }
+
+    /**
+     * Scramble emits `max:255` as the float 255.0, which would render as "255.0".
+     * These four constraints count characters or items, so they are always integers.
+     */
+    private function asCount(mixed $value): mixed
+    {
+        return is_float($value) && $value === floor($value) ? (int) $value : $value;
     }
 
     /**

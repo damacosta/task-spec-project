@@ -13,8 +13,13 @@ use Filament\Support\Icons\Heroicon;
 
 enum TeamStatus: string implements HasColor, HasIcon, HasLabel
 {
+    /** The team operates normally and its members can sign in. */
     case Active = 'active';
+
+    /** Access is blocked while an incident is reviewed; the team can go back to active. */
     case Suspended = 'suspended';
+
+    /** The team is closed for good and no longer appears in the default listing. */
     case Archived = 'archived';
 
     public function getLabel(): string

@@ -8,6 +8,7 @@ use Dedoc\Scramble\Contracts\DocumentTransformer;
 use Dedoc\Scramble\OpenApiContext;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecuritySchemes\HttpSecurityScheme;
+use Illuminate\Support\Str;
 
 /**
  * Conventions static analysis cannot infer: how the API is authenticated, and what the
@@ -38,9 +39,12 @@ final class DocumentsApiConventions implements DocumentTransformer
             'AuthorizationException' => 'The credentials are valid but lack the required ability.',
         ];
 
+        // Components key responses by FQCN; the short name only appears once serialised.
         foreach ($context->openApi->components->responses as $name => $response) {
-            if (isset($descriptions[$name])) {
-                $response->description($descriptions[$name]);
+            $shortName = Str::afterLast($name, '\\');
+
+            if (isset($descriptions[$shortName])) {
+                $response->description($descriptions[$shortName]);
             }
         }
     }
