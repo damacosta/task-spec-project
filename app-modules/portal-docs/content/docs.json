@@ -23,6 +23,14 @@
                         "pages": ["get-started"]
                     },
                     {
+                        "group": "Conceitos",
+                        "pages": ["concepts/arquitetura"]
+                    },
+                    {
+                        "group": "Fluxos",
+                        "pages": ["flows/documentar-um-endpoint"]
+                    },
+                    {
                         "group": "Referência",
                         "pages": ["reference/componentes"]
                     }
@@ -34,7 +42,7 @@
                 "groups": [
                     {
                         "group": "Sobre a API",
-                        "pages": ["reference/errors"]
+                        "pages": ["reference/errors", "reference/state-lifecycles"]
                     }
                 ]
             }

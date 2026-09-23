@@ -1,0 +1,79 @@
+---
+title: Ciclos de vida
+description: Os estados que um time percorre e o que cada transição permite.
+icon: git-branch
+---
+
+Um time nasce ativo. Daí em diante ele só muda de estado por uma chamada explícita à API:
+nada aqui acontece por tempo ou por job em segundo plano.
+
+## Estados de um time
+
+<Mermaid chart={`stateDiagram-v2
+    [*] --> Active: POST /api/teams
+    Active --> Suspended: PATCH status=suspended
+    Suspended --> Active: PATCH status=active
+    Active --> Archived: PATCH status=archived
+    Suspended --> Archived: PATCH status=archived
+    Archived --> [*]: DELETE`} />
+
+| Estado | O que significa | Volta atrás? |
+| --- | --- | --- |
+| `active` | O time opera normalmente e seus membros conseguem entrar. | — |
+| `suspended` | O acesso está bloqueado enquanto um incidente é revisado. | sim, para `active` |
+| `archived` | O time foi encerrado e sai da listagem padrão. | não |
+
+<Note>
+    Essas três descrições não foram escritas aqui: elas saem do PHPDoc de cada case em
+    `TeamStatus` e chegam ao documento OpenAPI como `x-enumDescriptions`. Mudar o enum
+    muda a aba de API sozinha.
+</Note>
+
+## Suspender um time
+
+<CodeGroup>
+
+```bash cURL
+curl --request PATCH \
+  --url https://exemplo.test/api/teams/9f8c2b1a-4d3e-4f5a-8b6c-7d8e9f0a1b2c \
+  --header 'Content-Type: application/json' \
+  --data '{"status": "suspended"}'
+```
+
+```php PHP
+use Illuminate\Support\Facades\Http;
+
+$response = Http::withHeaders([
+        'Content-Type' => 'application/json',
+    ])
+    ->patch('https://exemplo.test/api/teams/'.$team->id, [
+        'status' => 'suspended',
+    ]);
+```
+
+```javascript JavaScript
+const response = await fetch(`https://exemplo.test/api/teams/${teamId}`, {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ status: 'suspended' }),
+});
+```
+
+</CodeGroup>
+
+## Apagar não apaga
+
+O `DELETE` faz *soft delete*: a linha continua na tabela com `deleted_at` preenchido e
+some das consultas normais.
+
+```php
+$team->delete();
+
+Team::query()->find($team->id);        // null
+Team::withTrashed()->find($team->id);  // o registro
+```
+
+<Warning>
+    Como o registro continua lá, o `slug` continua ocupado. Criar outro time com o mesmo
+    slug falha com 422 até alguém restaurar ou remover de vez o antigo.
+</Warning>
