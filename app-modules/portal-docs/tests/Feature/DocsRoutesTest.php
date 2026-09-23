@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use He4rt\PortalDocs\Docs\DocsSite;
 use He4rt\PortalDocs\Tests\Support\FixtureSite;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia;
 
@@ -110,6 +111,15 @@ it('sends navigation and config only on the first visit', function (): void {
 
     expect($second->json('props'))->not->toHaveKey('navigation')
         ->and($second->json('props'))->not->toHaveKey('config');
+});
+
+it('renders the portal on the client, never through ssr', function (): void {
+    Http::preventStrayRequests();
+
+    // A portal route reaching the SSR gateway would raise StrayRequestException here:
+    // Mintlify highlights code in a worker and Mermaid needs a DOM.
+    get('/docs/get-started')->assertOk();
+    get('/docs/api/post/post-posts')->assertOk();
 });
 
 it('serves the portal from a configurable prefix', function (): void {

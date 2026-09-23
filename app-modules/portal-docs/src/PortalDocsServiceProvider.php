@@ -11,6 +11,7 @@ use He4rt\PortalDocs\OpenApi\ScrambleSpecLoader;
 use He4rt\PortalDocs\OpenApi\SpecLoader;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class PortalDocsServiceProvider extends ServiceProvider
 {
@@ -38,6 +39,10 @@ class PortalDocsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'portal-docs');
+
+        // The portal is client-rendered on purpose: Mintlify highlights code in a worker
+        // and Mermaid needs a DOM. Scoped to this prefix so the host keeps its options.
+        Inertia::withoutSsr(config()->string('portal-docs.prefix', 'docs').'/*');
 
         // assertInertia resolves page components against this list; without the push it
         // reports "Inertia page component [Docs/Show] does not exist".
