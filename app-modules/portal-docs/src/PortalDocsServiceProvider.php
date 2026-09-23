@@ -18,6 +18,11 @@ class PortalDocsServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/portal-docs.php', 'portal-docs');
 
+        // Scramble reads this flag in its own boot(), which runs before this module's:
+        // calling it from boot() here would arrive after the routes are already exposed,
+        // and Scramble's GET docs/api would silently replace the portal's.
+        Scramble::ignoreDefaultRoutes();
+
         $this->app->bind(SpecLoader::class, fn (): ScrambleSpecLoader => new ScrambleSpecLoader(
             config()->string('portal-docs.openapi.api', Scramble::DEFAULT_API),
         ));
@@ -40,9 +45,6 @@ class PortalDocsServiceProvider extends ServiceProvider
             ...config()->array('inertia.pages.paths', []),
             __DIR__.'/../resources/js/pages',
         ]);
-
-        // The portal owns /docs; Scramble's own UI is registered there by default.
-        Scramble::ignoreDefaultRoutes();
 
         // `regex:` rules already become `pattern` through Scramble's own RegexRule transformer.
         Scramble::configure()->withDocumentTransformers(DocumentsApiConventions::class);
