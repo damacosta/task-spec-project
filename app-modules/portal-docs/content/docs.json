@@ -1,0 +1,24 @@
+{
+    "$schema": "https://mintlify.com/docs.json",
+    "name": "Sycorax",
+    "description": "Documentação da plataforma Sycorax e da sua API.",
+    "colors": { "primary": "#7C3AED", "light": "#A78BFA", "dark": "#5B21B6" },
+    "appearance": { "default": "system" },
+    "contextual": { "options": ["copy", "view", "chatgpt", "claude"] },
+    "navigation": {
+        "tabs": [
+            {
+                "tab": "Documentation",
+                "groups": [{ "group": "Começar", "pages": ["get-started"] }]
+            },
+            {
+                "tab": "API reference",
+                "openapi": true,
+                "groups": [{ "group": "Sobre a API", "pages": ["reference/errors"] }]
+            }
+        ],
+        "global": {
+            "anchors": [{ "anchor": "Repositório", "href": "https://github.com/he4rt/sycorax", "icon": "github" }]
+        }
+    }
+}

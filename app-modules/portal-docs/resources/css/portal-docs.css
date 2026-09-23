@@ -1,0 +1,58 @@
+/*
+ * Bundle of the documentation portal, kept apart from the app's own CSS on purpose:
+ * @mintlify/components ships a pre-compiled Tailwind build with its own preflight and
+ * palette, and mixing it with the Filament theme produces collisions neither side owns.
+ *
+ * ORDER IS LOAD-BEARING. Mintlify first, Tailwind second. With this order our plain
+ * utilities (.flex-col, .w-full) win over the package's responsive variants (lg:flex-row),
+ * which is why the overrides at the bottom exist. Swapping the two lines breaks the whole
+ * layout instead of just those components.
+ */
+@import '@mintlify/components/styles.css';
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+
+@source '../js';
+@source '../../content';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* Overwritten at runtime by the colors declared in docs.json. */
+    --color-primary: #16a34a;
+    --color-primary-light: #07c983;
+    --color-primary-dark: #15803d;
+    --color-background-dark: #0e0e0f;
+}
+
+/*
+ * Overrides of @mintlify/components
+ * ---------------------------------
+ * Each block here exists because of the cascade note above. Removing one brings the
+ * broken layout back; none of them is a style preference.
+ */
+
+/* Update renders its columns with lg:* utilities that our .flex-col outranks. */
+@media (width >= 64rem) {
+    [data-component-part='update-container'] {
+        flex-direction: row;
+    }
+}
+
+/* The package styles these parts with text-secondary*, a token its shipped CSS lacks. */
+[data-component-part='update-label'],
+[data-component-part='update-description'] {
+    color: var(--color-stone-500);
+}
+
+:where(.dark) [data-component-part='update-label'],
+:where(.dark) [data-component-part='update-description'] {
+    color: var(--color-stone-400);
+}
+
+/* Tables inside prose overflow on phones; the package has no wrapper of its own. */
+.prose :where(table) {
+    display: block;
+    overflow-x: auto;
+}

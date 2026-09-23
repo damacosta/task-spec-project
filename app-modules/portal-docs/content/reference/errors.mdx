@@ -1,0 +1,18 @@
+---
+title: Erros
+description: O formato das respostas de erro da API.
+---
+
+Toda resposta de erro traz um campo `message`. Respostas de validação trazem também
+`errors`, com uma lista de mensagens por campo.
+
+| Status | Quando acontece |
+| --- | --- |
+| `401` | A requisição não carrega credenciais válidas. |
+| `404` | Nenhum registro corresponde ao identificador do caminho. |
+| `422` | O corpo da requisição não passou na validação. |
+
+<Warning>
+    A API documenta `bearerAuth`, mas as rotas hoje exigem sessão autenticada. Os dois
+    precisam ser reconciliados antes de publicar a API para fora.
+</Warning>
