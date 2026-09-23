@@ -1,0 +1,38 @@
+{
+    "name": "@he4rt/sycorax",
+    "license": "MIT",
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "packageManager": "bun@1.4.2",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "format": "prettier --write \"**/*.{js,ts,json,yml,md,css}\"",
+        "prepare": "husky",
+        "outdated": "npm-check-updates"
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "0.5.20",
+        "@tailwindcss/vite": "4.3.3",
+        "autoprefixer": "10.6.1",
+        "concurrently": "10.0.5",
+        "fontaine": "0.8.2",
+        "husky": "9.1.7",
+        "laravel-vite-plugin": "3.2.0",
+        "lint-staged": "17.5.1",
+        "npm-check-updates": "23.1.0",
+        "prettier": "3.9.8",
+        "tailwindcss": "4.3.3",
+        "vite": "8.3.0"
+    },
+    "lint-staged": {
+        "*.{js,ts,json,yml,md,css}": [
+            "prettier --write"
+        ],
+        "*.php": [
+            "vendor/bin/rector process",
+            "vendor/bin/pint"
+        ]
+    }
+}
