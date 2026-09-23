@@ -1,0 +1,31 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Fixture Docs",
+  "description": "A fixture site used by the portal-docs test suite.",
+  "colors": { "primary": "#B45309", "light": "#F59E0B", "dark": "#92400E" },
+  "appearance": { "default": "system" },
+  "contextual": { "options": ["copy", "view", "claude"] },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          { "group": "Get Started", "pages": ["get-started"] },
+          { "group": "Flows", "pages": ["flows/create", "flows/missing", "../secret"] }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "openapi": true,
+        "groups": [
+          { "group": "API documentation", "pages": ["reference/errors"] }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        { "anchor": "Support", "href": "mailto:support@example.com", "icon": "life-buoy" }
+      ]
+    }
+  }
+}
