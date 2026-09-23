@@ -9,3 +9,10 @@
 @source '../../../../vendor/guava/filament-knowledge-base/resources/views/**/*';
 @source '../../../../vendor/guava/filament-knowledge-base/src/**/*';
 @source '../../../../vendor/joaopaulolndev/filament-edit-profile/resources/**/*';
+
+/* Typography drops the top margin of whatever follows a heading, so an opening paragraph
+   sits tight under its title. When that neighbour is another heading, the two sections
+   touch: in the knowledge base a `##` is often followed straight by a `###`. */
+.gu-kb-article :is(h2, h3, h4) + :is(h2, h3, h4) {
+    margin-top: 2rem;
+}
