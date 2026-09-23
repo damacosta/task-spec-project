@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import { lazy, Suspense } from 'react';
 import ArticleSkeleton from '../../components/ArticleSkeleton';
+import ContextMenu from '../../components/ContextMenu';
 import Pagination from '../../components/Pagination';
 import TableOfContents from '../../components/TableOfContents';
 import DocsLayout from '../../DocsLayout';
@@ -24,7 +25,7 @@ function pageComponent(slug) {
 }
 
 export default function Show() {
-    const { config, page, previous, next } = usePage().props;
+    const { config, page, previous, next, markdownUrl } = usePage().props;
     const Content = pageComponent(page.slug);
     const wide = page.mode === 'wide';
 
@@ -39,8 +40,12 @@ export default function Show() {
                     <p className="text-primary mb-2 text-sm font-medium not-prose">{page.group}</p>
                     <h1 className="mb-2">{page.title}</h1>
                     {page.description && (
-                        <p className="not-prose mb-8 text-lg text-stone-500 dark:text-stone-400">{page.description}</p>
+                        <p className="not-prose mb-4 text-lg text-stone-500 dark:text-stone-400">{page.description}</p>
                     )}
+
+                    <div className="mb-8">
+                        <ContextMenu allowed={config.contextual} pageUrl={page.href} markdownUrl={markdownUrl} />
+                    </div>
 
                     <Suspense fallback={<ArticleSkeleton />}>
                         <Content />

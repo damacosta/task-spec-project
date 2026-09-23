@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace He4rt\PortalDocs;
 
 use Dedoc\Scramble\Scramble;
+use He4rt\PortalDocs\Console\CacheDocsCommand;
 use He4rt\PortalDocs\Docs\DocsSite;
 use He4rt\PortalDocs\OpenApi\Scramble\DocumentsApiConventions;
 use He4rt\PortalDocs\OpenApi\ScrambleSpecLoader;
@@ -38,6 +39,10 @@ class PortalDocsServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([CacheDocsCommand::class]);
+        }
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'portal-docs');
 
         // The portal is client-rendered on purpose: Mintlify highlights code in a worker

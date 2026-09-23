@@ -66,7 +66,9 @@ return [
     'cache' => [
         'enabled' => env('PORTAL_DOCS_CACHE', default: true),
         'ttl' => 86_400,
-        'version' => env('PORTAL_DOCS_VERSION'),
+        // Empty, never null: config()->string() rejects null even with a default,
+        // because the key exists and only a missing key falls back.
+        'version' => env('PORTAL_DOCS_VERSION', ''),
     ],
 
     /*

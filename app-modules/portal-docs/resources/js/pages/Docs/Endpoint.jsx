@@ -1,4 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
+import ContextMenu from '../../components/ContextMenu';
 import ExamplesPanel from '../../components/ExamplesPanel';
 import FieldList from '../../components/FieldList';
 import InlineMarkdown from '../../components/InlineMarkdown';
@@ -13,7 +14,7 @@ const PARAMETER_SECTIONS = [
 ];
 
 export default function Endpoint() {
-    const { config, page, endpoint, previous, next } = usePage().props;
+    const { config, page, endpoint, previous, next, markdownUrl } = usePage().props;
 
     return (
         <>
@@ -31,6 +32,10 @@ export default function Endpoint() {
                     )}
 
                     <UrlBar method={endpoint.method} server={endpoint.server} path={endpoint.path} />
+
+                    <div className="mt-4">
+                        <ContextMenu allowed={config.contextual} pageUrl={page.href} markdownUrl={markdownUrl} />
+                    </div>
 
                     {endpoint.description && (
                         <InlineMarkdown

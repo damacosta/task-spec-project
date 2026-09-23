@@ -26,12 +26,17 @@ final class DocsSite
 
     private ?OpenApiDocument $openApi = null;
 
+    private readonly NavigationCache $cache;
+
     public function __construct(
         private readonly string $contentPath,
         private readonly SpecLoader $specLoader,
         private readonly string $prefix = 'docs',
         private readonly bool $openApiEnabled = true,
-    ) {}
+        ?NavigationCache $cache = null,
+    ) {
+        $this->cache = $cache ?? NavigationCache::fromConfig();
+    }
 
     public static function isSafeSlug(string $slug): bool
     {
@@ -56,7 +61,11 @@ final class DocsSite
      */
     public function navigation(): array
     {
-        return $this->navigation ??= $this->buildNavigation();
+        return $this->navigation ??= $this->cache->remember(
+            'navigation',
+            $this,
+            fn (): array => $this->buildNavigation(),
+        );
     }
 
     /**
@@ -142,7 +151,9 @@ final class DocsSite
             return null;
         }
 
-        return $this->openApi ??= new OpenApiDocument($this->specLoader->load());
+        return $this->openApi ??= new OpenApiDocument(
+            $this->cache->remember('spec', $this, fn (): array => $this->specLoader->load()),
+        );
     }
 
     /**
@@ -238,6 +249,17 @@ final class DocsSite
     /**
      * Timestamps of everything the navigation is derived from; the cache key hangs off this.
      */
+    /** Drops what portal-docs:cache warms, so a deploy can rebuild it. */
+    public function forgetCache(): void
+    {
+        $this->cache->forget('navigation', $this);
+        $this->cache->forget('spec', $this);
+
+        $this->navigation = null;
+        $this->openApi = null;
+        $this->config = null;
+    }
+
     public function fingerprint(): string
     {
         $paths = [$this->contentPath.'/docs.json', ...$this->mdxFiles()];
