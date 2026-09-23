@@ -33,22 +33,48 @@
  * broken layout back; none of them is a style preference.
  */
 
-/* Update renders its columns with lg:* utilities that our .flex-col outranks. */
+/*
+ * Update lays its two columns out with lg:flex-row, which our plain .flex-col outranks
+ * (see the cascade note above). `update-container` is a plain class on the root, not a
+ * data-component-part like the inner pieces.
+ */
 @media (width >= 64rem) {
-    [data-component-part='update-container'] {
+    .update-container {
         flex-direction: row;
+        gap: calc(var(--spacing) * 6);
+    }
+
+    /* The label column also loses lg:w-[160px] to our w-full and would push the
+       content out of the article, so both columns are sized here. */
+    .update-container > *:first-child {
+        width: 10rem;
+        flex-shrink: 0;
+    }
+
+    .update-container > *:last-child {
+        min-width: 0;
+        flex: 1;
     }
 }
 
 /* The package styles these parts with text-secondary*, a token its shipped CSS lacks. */
-[data-component-part='update-label'],
-[data-component-part='update-description'] {
+[data-component-part='update-description'],
+[data-component-part='update-tag-list'] {
     color: var(--color-stone-500);
 }
 
-:where(.dark) [data-component-part='update-label'],
-:where(.dark) [data-component-part='update-description'] {
+:where(.dark) [data-component-part='update-description'],
+:where(.dark) [data-component-part='update-tag-list'] {
     color: var(--color-stone-400);
+}
+
+/*
+ * Property renders "Default" and its value as two spans separated by gap-1, but the
+ * parent forces [&_div]:inline on them, and gap does nothing on an inline box: the two
+ * render glued together as "Default1".
+ */
+[data-component-part='field-info-pill'] > span:first-child {
+    margin-right: 0.25rem;
 }
 
 /* Tables inside prose overflow on phones; the package has no wrapper of its own. */

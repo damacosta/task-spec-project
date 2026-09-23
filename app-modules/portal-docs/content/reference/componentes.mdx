@@ -1,0 +1,124 @@
+---
+title: Componentes
+description: Todo componente disponível numa página .mdx, com o código ao lado.
+icon: blocks
+---
+
+Os componentes abaixo estão no escopo de qualquer arquivo `.mdx` sem `import`. Esta
+página existe para dois fins: servir de referência e falhar o build se algum wrapper
+quebrar numa atualização do `@mintlify/components`.
+
+## Avisos
+
+<Note>Uma observação lateral.</Note>
+<Tip>Uma dica prática.</Tip>
+<Warning>Algo que merece atenção antes de continuar.</Warning>
+<Info>Um detalhe de contexto.</Info>
+<Check>Algo que deu certo.</Check>
+<Danger>Algo que causa perda de dado.</Danger>
+
+## Cartões e colunas
+
+<Columns cols={2}>
+    <Card title="Começar" icon="rocket" href="/docs/get-started">
+        Como escrever a primeira página.
+    </Card>
+    <Card title="Erros" icon="triangle-alert" href="/docs/reference/errors">
+        O formato das respostas de erro.
+    </Card>
+</Columns>
+
+## Passos
+
+<Steps>
+    <Step title="Criar o arquivo" icon="file-plus">
+        Um `.mdx` dentro de `content/`.
+    </Step>
+    <Step title="Listar no docs.json" icon="list">
+        Sem isso a página não é navegável.
+    </Step>
+</Steps>
+
+## Abas
+
+<Tabs>
+    <Tab title="Composer">
+        ```bash
+        composer install
+        ```
+    </Tab>
+    <Tab title="Bun">
+        ```bash
+        bun install
+        ```
+    </Tab>
+</Tabs>
+
+## Sanfonas
+
+<AccordionGroup>
+    <Accordion title="O que é um slug" icon="link">
+        O caminho da página dentro de `content/`, sem a extensão.
+    </Accordion>
+    <Accordion title="Por que a ordem do CSS importa" defaultOpen>
+        O `styles.css` do Mintlify é um Tailwind pré-compilado e precisa vir primeiro.
+    </Accordion>
+</AccordionGroup>
+
+## Blocos de código
+
+<CodeGroup>
+
+```bash Terminal
+php artisan portal-docs:cache
+```
+
+```php Provider
+Scramble::ignoreDefaultRoutes();
+```
+
+</CodeGroup>
+
+## Campos de API em prosa
+
+<ParamField query="page" type="integer" default={1}>
+    Página a buscar.
+</ParamField>
+
+<ResponseField name="data" type="object[]" required>
+    Os registros da página atual.
+
+    <Expandable title="campos">
+        <ResponseField name="id" type="string">
+            Identificador do registro.
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+## Árvore de arquivos
+
+<Tree>
+    <Folder name="content" defaultOpen>
+        <File name="docs.json" />
+        <Folder name="reference">
+            <File name="errors.mdx" />
+        </Folder>
+    </Folder>
+</Tree>
+
+## Diagrama
+
+<Mermaid chart={`flowchart LR
+    A[docs.json] --> B[DocsSite]
+    B --> C[Inertia]
+    C --> D[React]`} />
+
+## Etiquetas e dicas
+
+<Badge>estável</Badge> <Tooltip tip="Aparece ao passar o mouse.">com dica</Tooltip>
+
+## Registro de mudanças
+
+<Update label="2026-09-23" description="v0.1.0" tags={["portal-docs"]}>
+    Primeira versão do portal.
+</Update>
