@@ -23,3 +23,11 @@
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
 }
+
+/* The panel nav scrolls on its own whenever the menu is taller than the viewport, and the
+   platform draws that scrollbar wide, with arrows and a light track, right against the
+   sidebar edge. A thin bar with a tinted thumb and no track stops it cutting the menu. */
+.fi-sidebar-nav {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, currentColor 30%, transparent) transparent;
+}
