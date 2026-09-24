@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace App\Filament\Plugins\KnowledgeBase;
 
 use App\Enums\Language;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
-use Filament\Support\Facades\FilamentView;
 use Filament\Support\Icons\Heroicon;
-use Filament\View\PanelsRenderHook;
 use Guava\FilamentKnowledgeBase\Contracts\Documentable;
 use Guava\FilamentKnowledgeBase\Enums\NodeType;
 use Guava\FilamentKnowledgeBase\KnowledgeBaseRegistry;
 use Guava\FilamentKnowledgeBase\Plugins\KnowledgeBasePlugin;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
 
 class BetterKnowledgeBasePlugin extends KnowledgeBasePlugin
 {
@@ -88,7 +86,7 @@ class BetterKnowledgeBasePlugin extends KnowledgeBasePlugin
     }
 
     /**
-     * Replaces the entire sidebar with documentation navigation + a "Go Back" item.
+     * Replaces the entire sidebar with documentation navigation and adds a "Go Back" item to the user menu.
      */
     protected function overrideNavigationWithDocs(Panel $panel): void
     {
@@ -150,21 +148,13 @@ class BetterKnowledgeBasePlugin extends KnowledgeBasePlugin
                 ->items($groupItems);
         })->values()->all();
 
-        $dashboardUrl = Dashboard::getUrl(panel: $panel->getId());
-
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::SIDEBAR_NAV_START,
-            fn () => Blade::render(
-                '<a href="{{ $url }}" class="flex items-center gap-x-2 px-3 py-2 mb-3 rounded-lg text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary-600 dark:hover:text-primary-400 transition duration-150 ease-in-out group">
-                    <x-filament::icon icon="heroicon-o-arrow-left" class="h-4 w-4 shrink-0 transition-transform duration-150 group-hover:-translate-x-0.5" />
-                    <span>{{ $label }}</span>
-                </a>',
-                [
-                    'url' => $dashboardUrl,
-                    'label' => __('knowledge_base.back_to_panel', ['panel' => mb_ucfirst($panel->getId())]),
-                ],
-            ),
-        );
+        $panel->userMenuItems([
+            'back-to-panel' => Action::make('back-to-panel')
+                ->label(__('knowledge_base.back_to_panel', ['panel' => mb_ucfirst($panel->getId())]))
+                ->url(Dashboard::getUrl(panel: $panel->getId()))
+                ->icon(Heroicon::OutlinedArrowLeft)
+                ->sort(1),
+        ]);
 
         $panel->navigation(fn (NavigationBuilder $builder): NavigationBuilder => $builder
             ->items([
