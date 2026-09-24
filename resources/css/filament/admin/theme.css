@@ -10,9 +10,16 @@
 @source '../../../../vendor/guava/filament-knowledge-base/src/**/*';
 @source '../../../../vendor/joaopaulolndev/filament-edit-profile/resources/**/*';
 
-/* Typography drops the top margin of whatever follows a heading, so an opening paragraph
-   sits tight under its title. When that neighbour is another heading, the two sections
-   touch: in the knowledge base a `##` is often followed straight by a `###`. */
-.gu-kb-article :is(h2, h3, h4) + :is(h2, h3, h4) {
-    margin-top: 2rem;
+/* Typography sizes heading margins in `em`, which on these short pages opens a gap before
+   every `##`, and it zeroes the top margin of whatever follows a heading, so a `##` and
+   the `###` right after it touch. One rule per level covers both: `:where()` gives the
+   plugin's selectors no specificity, so a plain class beats them. */
+.gu-kb-article h2 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.gu-kb-article :is(h3, h4) {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
 }
