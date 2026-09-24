@@ -9,3 +9,42 @@
 @source '../../../../vendor/guava/filament-knowledge-base/resources/views/**/*';
 @source '../../../../vendor/guava/filament-knowledge-base/src/**/*';
 @source '../../../../vendor/joaopaulolndev/filament-edit-profile/resources/**/*';
+
+/* Typography sizes heading margins in `em`, which on these short pages opens a gap before
+   every `##`, and it zeroes the top margin of whatever follows a heading, so a `##` and
+   the `###` right after it touch. One rule per level covers both: `:where()` gives the
+   plugin's selectors no specificity, so a plain class beats them. */
+.gu-kb-article h2 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.gu-kb-article :is(h3, h4) {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+/* The panel nav scrolls on its own whenever the menu is taller than the viewport, and the
+   platform draws that scrollbar wide, with arrows and a light track, right against the
+   sidebar edge. A thin bar with a tinted thumb and no track stops it cutting the menu. */
+.fi-sidebar-nav {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, currentColor 30%, transparent) transparent;
+}
+
+/* The anchor sits absolute at a fixed -2rem, so the larger the heading the closer its `#`
+   lands to the text: 9px on an h1 against 16px on an h2. Pinning it to the text edge
+   instead keeps the same gap at every level. */
+.gu-kb-article .gu-kb-anchor {
+    right: 100%;
+    left: auto;
+    margin-right: 1.25rem;
+}
+
+/* From `md` the anchor leaves the flow and hangs left of the heading, into the page padding
+   that borders the sidebar. Reserving its width inside the article keeps the `#` off it. */
+@media (width >= 48rem) {
+    .gu-kb-article-full {
+        padding-left: 2.5rem;
+    }
+}

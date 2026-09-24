@@ -1,0 +1,84 @@
+/*
+ * Bundle of the documentation portal, kept apart from the app's own CSS on purpose:
+ * @mintlify/components ships a pre-compiled Tailwind build with its own preflight and
+ * palette, and mixing it with the Filament theme produces collisions neither side owns.
+ *
+ * ORDER IS LOAD-BEARING. Mintlify first, Tailwind second. With this order our plain
+ * utilities (.flex-col, .w-full) win over the package's responsive variants (lg:flex-row),
+ * which is why the overrides at the bottom exist. Swapping the two lines breaks the whole
+ * layout instead of just those components.
+ */
+@import '@mintlify/components/styles.css';
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+
+@source '../js';
+@source '../../content';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* Overwritten at runtime by the colors declared in docs.json. */
+    --color-primary: #16a34a;
+    --color-primary-light: #07c983;
+    --color-primary-dark: #15803d;
+    --color-background-dark: #0e0e0f;
+}
+
+/*
+ * Overrides of @mintlify/components
+ * ---------------------------------
+ * Each block here exists because of the cascade note above. Removing one brings the
+ * broken layout back; none of them is a style preference.
+ */
+
+/*
+ * Update lays its two columns out with lg:flex-row, which our plain .flex-col outranks
+ * (see the cascade note above). `update-container` is a plain class on the root, not a
+ * data-component-part like the inner pieces.
+ */
+@media (width >= 64rem) {
+    .update-container {
+        flex-direction: row;
+        gap: calc(var(--spacing) * 6);
+    }
+
+    /* The label column also loses lg:w-[160px] to our w-full and would push the
+       content out of the article, so both columns are sized here. */
+    .update-container > *:first-child {
+        width: 10rem;
+        flex-shrink: 0;
+    }
+
+    .update-container > *:last-child {
+        min-width: 0;
+        flex: 1;
+    }
+}
+
+/* The package styles these parts with text-secondary*, a token its shipped CSS lacks. */
+[data-component-part='update-description'],
+[data-component-part='update-tag-list'] {
+    color: var(--color-stone-500);
+}
+
+:where(.dark) [data-component-part='update-description'],
+:where(.dark) [data-component-part='update-tag-list'] {
+    color: var(--color-stone-400);
+}
+
+/*
+ * Property renders "Default" and its value as two spans separated by gap-1, but the
+ * parent forces [&_div]:inline on them, and gap does nothing on an inline box: the two
+ * render glued together as "Default1".
+ */
+[data-component-part='field-info-pill'] > span:first-child {
+    margin-right: 0.25rem;
+}
+
+/* Tables inside prose overflow on phones; the package has no wrapper of its own. */
+.prose :where(table) {
+    display: block;
+    overflow-x: auto;
+}

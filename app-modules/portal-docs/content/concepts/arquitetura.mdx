@@ -1,0 +1,65 @@
+---
+title: Arquitetura
+description: O caminho que uma página percorre do arquivo em disco até a tela.
+icon: layers
+---
+
+O portal tem duas metades que nunca se misturam: o Laravel resolve **qual** página
+responder, e o React resolve **como** desenhá-la. O que as liga é um payload do Inertia.
+
+## O caminho de uma requisição
+
+<Mermaid chart={`flowchart TD
+    A["GET /docs/concepts/arquitetura"] --> B[DocsController::show]
+    B --> C{"DocsSite::find(slug)"}
+    C -->|não achou| D[404]
+    C -->|achou| E{"kind da página"}
+    E -->|mdx| F["Inertia::render('Docs/Show')"]
+    E -->|endpoint| G["Inertia::render('Docs/Endpoint')"]
+    F --> H["import('./arquitetura.mdx')"]
+    H --> I[chunk de ~2 kB]`} />
+
+O passo que costuma surpreender é o último: o conteúdo da página **não** vem na resposta
+do Laravel. O servidor manda só o slug, e o navegador busca o pedaço compilado daquela
+página. Por isso trocar de página baixa poucos kilobytes.
+
+## Quem decide o que existe
+
+<Mermaid chart={`flowchart LR
+    A[docs.json] -->|lista os slugs| B[DocsSite]
+    C[".mdx em content/"] -->|frontmatter| B
+    D[Scramble] -->|documento OpenAPI| E[OpenApiDocument]
+    E -->|um grupo por tag| B
+    B --> F[navegação]`} />
+
+<Warning>
+    Um arquivo `.mdx` que existe em `content/` mas não aparece no `docs.json` não existe
+    para o portal: não é navegável, não entra no `llms.txt` e responde 404. Isso é
+    proposital, e é o que impede uma página meio escrita de vazar.
+</Warning>
+
+## As duas abas
+
+A aba **Documentation** é escrita à mão. A aba **API reference** é gerada: o Scramble lê
+os controllers por análise estática e devolve um documento OpenAPI, que o portal resolve
+numa página por operação.
+
+```php config/portal-docs.php
+'openapi' => [
+    'enabled' => true,
+    'api' => 'default',
+],
+```
+
+Uma aba pode ter os dois: declare os grupos de `.mdx` normalmente e ligue `openapi`, que
+os grupos gerados entram **depois** dos escritos à mão.
+
+```json docs.json
+{
+  "tab": "API reference",
+  "openapi": true,
+  "groups": [
+    { "group": "Sobre a API", "pages": ["reference/errors"] }
+  ]
+}
+```

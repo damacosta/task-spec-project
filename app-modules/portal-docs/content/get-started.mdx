@@ -1,0 +1,36 @@
+---
+title: Começar
+description: O que é o portal de documentação e como escrever uma página.
+icon: rocket
+---
+
+Este portal serve duas abas: **Documentation**, escrita à mão em MDX, e
+**API reference**, gerada do OpenAPI que o Scramble produz a partir dos controllers.
+
+## Escrever uma página
+
+Crie um arquivo `.mdx` em `content/` e liste o slug dele em `docs.json`. Uma página que
+não aparece no `docs.json` não existe para o portal: não é navegável, não entra no
+`llms.txt` e responde 404.
+
+<Note>
+    O bloco de frontmatter precisa ser a primeira coisa do arquivo. Uma linha em branco
+    antes dele faz o MDX ler os três traços como uma linha horizontal, e a página perde
+    o título.
+</Note>
+
+## Componentes disponíveis
+
+Os componentes do Mintlify estão no escopo global, sem `import`.
+
+<CodeGroup>
+
+```mdx Exemplo
+<Warning>Isto aparece numa caixa amarela.</Warning>
+```
+
+```bash Instalar
+bun install
+```
+
+</CodeGroup>

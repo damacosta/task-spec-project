@@ -1,0 +1,177 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Fixture API", "version": "1.0.0" },
+  "servers": [{ "url": "https://fixture.test/api" }],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/posts": {
+      "get": {
+        "operationId": "posts.index",
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page to fetch.",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "X-Sandbox-Scenario",
+            "in": "header",
+            "description": "Forces a sandbox outcome.",
+            "schema": {
+              "type": "string",
+              "enum": ["success", "failure"],
+              "x-enumDescriptions": {
+                "success": "The call succeeds.",
+                "failure": "The call fails with 422."
+              }
+            },
+            "example": "success"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of posts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Post" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a post",
+        "description": "Creates a draft post.",
+        "operationId": "posts.store",
+        "tags": ["Post"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Headline of the post.",
+                    "maxLength": 255,
+                    "examples": ["Shipping the docs portal"]
+                  },
+                  "status": { "$ref": "#/components/schemas/PostStatus" },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": { "type": "string", "description": "Free-form value." }
+                  },
+                  "author": {
+                    "allOf": [
+                      { "$ref": "#/components/schemas/Author" },
+                      { "type": "object", "required": ["email"] }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created post.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Post" } }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationException" }
+        }
+      }
+    },
+    "/posts/{post}": {
+      "delete": {
+        "summary": "Delete a post",
+        "operationId": "posts.destroy",
+        "tags": ["Post"],
+        "deprecated": true,
+        "parameters": [
+          { "name": "post", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "204": { "description": "Deleted." } }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "List users",
+        "operationId": "users.index",
+        "tags": ["User"],
+        "security": [{ "apiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Every user.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Author" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "A personal access token." },
+      "apiKeyAuth": { "type": "apiKey", "in": "header", "name": "x-api-key", "description": "A service key." }
+    },
+    "schemas": {
+      "PostStatus": {
+        "type": "string",
+        "enum": ["draft", "published"],
+        "default": "draft",
+        "description": "Lifecycle state.",
+        "x-enumDescriptions": {
+          "draft": "Only the author sees it.",
+          "published": "Visible to everyone."
+        }
+      },
+      "Author": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Ada Lovelace" },
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "example": "Shipping the docs portal" },
+          "status": { "$ref": "#/components/schemas/PostStatus" },
+          "published_at": { "type": ["string", "null"], "format": "date-time" },
+          "author": { "$ref": "#/components/schemas/Author" }
+        }
+      }
+    },
+    "responses": {
+      "ValidationException": {
+        "description": "The payload failed validation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "The title field is required." },
+                "errors": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

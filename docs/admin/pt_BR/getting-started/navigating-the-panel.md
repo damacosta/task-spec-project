@@ -30,4 +30,4 @@ Em cada página de recurso (Usuários, Equipes, Cargos), procure o **ícone de a
 
 ## Modo Documentação
 
-Quando você abre a Base de Conhecimento pela barra lateral, a navegação muda para uma árvore de documentação mostrando todos os guias disponíveis. Um botão **Voltar** no topo permite retornar à navegação normal do painel administrativo.
+Quando você abre a Base de Conhecimento pela barra lateral, a navegação muda para uma árvore de documentação mostrando todos os guias disponíveis. O item **Voltar para Admin**, no menu do usuário no rodapé da barra lateral, retorna à navegação normal do painel administrativo.

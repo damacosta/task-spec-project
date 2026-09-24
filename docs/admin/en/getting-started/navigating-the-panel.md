@@ -30,4 +30,4 @@ On every resource page (Users, Teams, Roles), look for the **help icon** in the 
 
 ## Documentation Mode
 
-When you open the Knowledge Base from the sidebar, the navigation switches to a documentation tree showing all available guides. A **Back** button at the top lets you return to the regular admin panel navigation.
+When you open the Knowledge Base from the sidebar, the navigation switches to a documentation tree showing all available guides. The **Back to Admin** item in the user menu, at the bottom of the sidebar, returns you to the regular admin panel navigation.

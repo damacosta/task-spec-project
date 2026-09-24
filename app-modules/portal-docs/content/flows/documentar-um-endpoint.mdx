@@ -1,0 +1,103 @@
+---
+title: Documentar um endpoint
+description: O que escrever no controller para a aba de API aparecer certa.
+icon: file-code
+---
+
+A aba **API reference** não é escrita: ela é lida do código. O que você anota no
+controller, no form request e no resource vira a página do endpoint.
+
+## O caminho da anotação até a tela
+
+<Mermaid chart={`flowchart LR
+    A[PHPDoc no controller] --> B[Scramble]
+    C[regras do FormRequest] --> B
+    D[PHPDoc no Resource] --> B
+    B --> E[documento OpenAPI]
+    E --> F[OpenApiDocument]
+    F --> G[página do endpoint]`} />
+
+## Título e descrição
+
+A primeira linha do PHPDoc vira o título da página; o resto vira a descrição.
+
+```php app/Http/Api/Controllers/TeamController.php
+/**
+ * Create a team
+ *
+ * The team starts as `active` unless the payload says otherwise.
+ */
+#[Response(status: 201, description: 'The created team.')]
+public function store(StoreTeamRequest $request): JsonResponse
+```
+
+Sem PHPDoc, o Scramble cai no `operationId` e o portal deriva um verbo: `teams.index`
+com a tag `Team` vira "List teams".
+
+## Parâmetros de consulta
+
+Vão como atributo, porque análise estática não adivinha um `request()->string('status')`.
+
+```php
+#[QueryParameter('page', description: 'Page to fetch.', type: 'int', default: 1, example: 2)]
+#[QueryParameter('status', description: 'Keep only the teams in this state.', type: TeamStatus::class)]
+public function index(): AnonymousResourceCollection
+```
+
+Passar o enum como `type` traz os valores aceitos **e** a descrição de cada um.
+
+## Corpo da requisição
+
+Cada regra do form request aceita um bloco de PHPDoc. É de lá que saem a descrição, o
+exemplo e o valor padrão que a página mostra.
+
+```php app/Http/Api/Requests/StoreTeamRequest.php
+return [
+    /**
+     * URL-safe identifier. Lowercase letters, digits and hyphens only.
+     *
+     * @example he4rt-developers
+     */
+    'slug' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/'],
+];
+```
+
+As regras viram restrições sozinhas:
+
+| Regra | Vira |
+| --- | --- |
+| `max:255` | `maxLength` |
+| `min:1` | `minimum` |
+| `email` | `format: email` |
+| `regex:/.../` | `pattern` |
+| `Rule::enum(...)` | `enum` com descrição por case |
+
+<Tip>
+    Escreva `@example` sempre que puder. Onde não há exemplo declarado, a página mostra
+    um marcador como `<string>`, que é honesto mas não ajuda quem lê.
+</Tip>
+
+## Conferir antes de subir
+
+<Steps>
+    <Step title="Gerar o documento" icon="terminal">
+        ```bash
+        php artisan scramble:export --path=storage/app/openapi.json
+        ```
+    </Step>
+    <Step title="Abrir a página" icon="eye">
+        A aba de API já reflete o código; não há passo de publicação.
+    </Step>
+    <Step title="Aquecer o cache" icon="zap">
+        ```bash
+        php artisan scramble:cache
+        ```
+        Sem isso cada visita refaz a análise estática dos controllers.
+    </Step>
+</Steps>
+
+<Warning>
+    Autenticação documentada não é autenticação aplicada. O documento anuncia
+    `bearerAuth`, mas quem protege a rota é o middleware dela. Manter os dois alinhados é
+    trabalho manual.
+</Warning>

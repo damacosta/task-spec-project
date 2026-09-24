@@ -1,0 +1,25 @@
+{
+    "name": "he4rt/portal-docs",
+    "description": "",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "He4rt\\PortalDocs\\": "src/",
+            "He4rt\\PortalDocs\\Database\\Factories\\": "database/factories/",
+            "He4rt\\PortalDocs\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "He4rt\\PortalDocs\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": ["He4rt\\PortalDocs\\PortalDocsServiceProvider"]
+        }
+    }
+}
