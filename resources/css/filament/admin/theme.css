@@ -31,3 +31,20 @@
     scrollbar-width: thin;
     scrollbar-color: color-mix(in oklab, currentColor 30%, transparent) transparent;
 }
+
+/* The anchor sits absolute at a fixed -2rem, so the larger the heading the closer its `#`
+   lands to the text: 9px on an h1 against 16px on an h2. Pinning it to the text edge
+   instead keeps the same gap at every level. */
+.gu-kb-article .gu-kb-anchor {
+    right: 100%;
+    left: auto;
+    margin-right: 1.25rem;
+}
+
+/* From `md` the anchor leaves the flow and hangs left of the heading, into the page padding
+   that borders the sidebar. Reserving its width inside the article keeps the `#` off it. */
+@media (width >= 48rem) {
+    .gu-kb-article-full {
+        padding-left: 2.5rem;
+    }
+}
